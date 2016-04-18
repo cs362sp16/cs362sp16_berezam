@@ -1,0 +1,6 @@
+For the sake of simplicity, I choose to refactor the first five cards listed in the cardEffect function, which were Adventurer, Council Room, Feast, Gardens, and Mine.
+I started by first creating five functions outside of the cardEffect function (right before it) and naming them using the card name + call (e.g. adventurer_call).
+Since the return for each case in cardEffect wasn't really dependent on the outcome of the actual card effect, I decided to make these five functions void.
+From there, I simply cut and pasted the already existing implementation of the cards in the cardEffect function, taking note of which variables each called that needed to be passed to the functions.
+I then called the associated functions in cardEffect where the cut code once was. 
+Once done, I did some quick debugging until the code compiled.
