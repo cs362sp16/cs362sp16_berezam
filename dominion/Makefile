@@ -19,3 +19,30 @@ all: playdom player
 
 clean:
 	rm -f *.o playdom.exe playdom test.exe test player unittest1 unittest2 unittest3 unittest4 cardtest1 cardtest2 cardtest3 cardtest4 player.exe testInit testInit.exe *.gcov *.gcda *.gcno *.so *.a *.dSYM
+	
+myassert.o: playdom.o myassert.h myassert.c
+	gcc -c myassert.c -g $(CFLAGS)
+	
+unittest1.o: myassert.o unittest1.c
+	gcc -o unittest1 unittest1.c -g dominion.o rngs.o myassert.o $(CFLAGS)
+	
+unittest2.o: myassert.o unittest2.c
+	gcc -o unittest2 unittest2.c -g dominion.o rngs.o myassert.o $(CFLAGS)
+	
+unittest3.o: myassert.o unittest3.c
+	gcc -o unittest3 unittest3.c -g dominion.o rngs.o myassert.o $(CFLAGS)
+	
+unittest4.o: myassert.o unittest4.c
+	gcc -o unittest4 unittest4.c -g dominion.o rngs.o myassert.o $(CFLAGS)
+	
+cardtest1.o: myassert.o cardtest1.c
+	gcc -o cardtest1 cardtest1.c -g dominion.o rngs.o myassert.o $(CFLAGS)
+	
+cardtest2.o: myassert.o cardtest2.c
+	gcc -o cardtest2 cardtest2.c -g dominion.o rngs.o myassert.o $(CFLAGS)
+	
+cardtest3.o: myassert.o cardtest3.c
+	gcc -o cardtest3 cardtest3.c -g dominion.o rngs.o myassert.o $(CFLAGS)
+	
+cardtest4.o: myassert.o cardtest4.c
+	gcc -o cardtest4 cardtest4.c -g dominion.o rngs.o myassert.o $(CFLAGS)

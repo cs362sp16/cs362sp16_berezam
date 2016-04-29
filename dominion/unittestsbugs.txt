@@ -1,0 +1,1 @@
+The only bugs found were that Feast, Smithy, and Village were not being placed into the discard after being played.

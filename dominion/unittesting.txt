@@ -1,0 +1,55 @@
+I started this assignment by first creating my own assert function, using the example code found in
+a simple unittest.c. This meant that the whole test would run even if an error was found partway through, which
+helps when counting code coverage.
+
+For unittest1, I tested the shuffle function. I called initializeGame and created my own game state. I wanted
+to make sure the function ran, that the deck size remained the same, and that the deck was not exactly the same
+as it was prior to being shuffled (most of the time). I did this by storing the old deck count and deck state
+before shuffling and comparing it to the state after shuffling. No bugs were found.
+
+For unittest2, I tested the playCard function. I wanted to make sure the function ran, that a card was drawn,
+and that the number of actions increased by 2. Like before, I used variables to store the old values and 
+compared them to the new state values. No bugs were found.
+
+For unittest3, I tested the gainCard function. Unfortunately, gainCard was not prototyped in dominion.h, so I 
+had to add a prototype of it to properly test it without relying on too many other function that may have bugs
+of their own. I tested it with the discard, hand, and deck flags and used a loop to make sure they were added
+properly. No bugs were found.
+
+For unittest4, I tested the getCost function. This was really basic since all I did was lookup the costs of 
+several cards online and made sure the function returned the right values. Once again, I had to add a prototype
+to dominion.h since there wasn't one. No bugs were found.
+
+For cardtest1, cardtest3, and cardtest4, I used for loops to make sure the cards were being placed in the 
+discard pile and weren't staying in the hand or being placed in the deck. The only bugs found were that cards
+were not being placed into the discard pile after being played.
+
+For cardtest1, I tested Feast by trying to buy a Duchy (which should work) and Province (which shouldn't) and
+it seemed to work in this regard. 
+
+For cardtest2, I tested Gardens, which simply meant that I made sure that the playCard function returned -1
+since Gardens can't be played.
+
+For cardtest3, I tested Smithy. I made sure that the hand size increased by 2 after it was played.
+
+For cardtest4, I tested Village. I made sure that the hand size remained the same and that the number of
+actions increased by 1 after playing.
+
+CODE COVERAGE
+------------------
+unittest1:	16.01%
+unittest2:	22.60%
+unittest3: 	18.33%
+unittest4: 	17.05%
+cardtest1: 	25.44%
+cardtest2: 	20.28%
+cardtest3: 	22.60%
+cardtest4: 	22.60%
+all:		38.85%
+
+Given the modular nature of the unit tests, it's not very surprising or problematic that each has a code
+coverage around 20%. However, the fact that all the tests together only have a coverage of about 39% means that
+this "test suite", for lack of a better word, is very far from comprehensive if we're talking about testing
+the entirety of dominion.c. So while this homework is useful for getting practice with unit tests and perhaps
+even helped us know a little more about what works and what doesn't with regards to the four functions and the 
+four cards tested, we are no closer to being confident about how bug-free the code is as a whole.
