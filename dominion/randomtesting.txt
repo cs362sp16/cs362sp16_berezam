@@ -1,0 +1,136 @@
+For all three cards, I randomly generated many of the state variables, such as number 
+of players, the active player, deckCount, discardCount, handCount, numActions, and 
+numBuys. The rest of the variables were either taken care of by the initializeGame 
+function or were initialized to logical values (such as phase = 0).
+
+--------------------------------------------------------------------------------------
+
+For the first card, Adventurer, I first tried to recreate what the card should be 
+doing and use the resulting state as a point of comparison. Parway through 
+implementing this idea, however, I realized that it would be nonsensical to try and 
+rewrite the whole method, since hypothetically my implemention is just as likely to 
+be buggy as the original. Even if it wasn't, if I was confident my implemention was 
+bug-free, I could just swap it with the buggy one and not bother testing at all. 
+Additionally, due to the complexity of the method, I figured that it would be 
+entirely possible for two correct implementions to have differing game states.
+
+From there, I decided to instead test if the Adventurer can be played (returns 0). 
+This assertion didn't fail once in the 5,000,000 tests so it's safe to safe that 
+given reasonable initial conditions, Adventurer can always be played. 
+
+I checked if the hand size increases by number of treasures found - 1 (since you lose
+the Adventurer card after you play it). This assertion always failed. The hand size 
+would consistently go up by 2 instead of 1 and I can't understand why. 
+
+I checked if the collective group of the deck, discard, and played pile had decreased
+by the number of cards drawn - 1, since the Adventurer card should be put into this 
+group once played. This assertion also always failed. For whatever reason, both the 
+deck and the discard size would decrease drastically after Adventurer was played, 
+while the played pile always remained at zero. This is definitely a bug, if not 
+several, since in a game of Dominion, your cards should only exist amongst the deck, 
+discard pile, hand, and played pile. Also, the total number of cards amongst these 
+groups should be constant unless a card is bought or is trashed, neither of which 
+should be happening when Adventurer is played. 
+
+I also checked if the number of treasure cards in hand increased by the amount 
+available between your deck and your discard (up to 2). This assertion passed most of 
+the time, but I was unable to find the reason that causes it to fail some of the 
+time. 
+
+Finally, I checked if the total number of treasure cards amongst the deck, discard, 
+and played piles decreased by the amount drawn, but this assertion also always 
+failed. 
+
+Based on the results of these tests and the ones from Assignment #2, I think it's 
+safe to say that there is something horribly wrong with the way cards are discarded 
+and moved around by playCard(), discardCard(), and cardEffect() and these results 
+say a lot more about these operations than they do about the specific implementation 
+of Adventurer.
+
+After the 1,000,000 tests, the overall code coverage of dominion.c was 26.51%, but 
+the statement and branch coverage of Adventurer was 100%. This amount consistently 	
+provides enough runs to make sure that the line that shuffles if the deck is empty 
+when adventurer is played is hit multiple times. This takes about 3 minutes on my 
+machine. 
+
+I did not bother trying to break the code to see if my test suite would catch it 
+since almost all my assertions were already failed so I wouldn't be able to see any 
+meaningful difference.
+
+--------------------------------------------------------------------------------------
+
+For the second card, I tested Feast. For this card, I wanted to make sure that Feast 
+was properly trashed after being played and that it would not allow you to gain a 
+card costing more than 5 or a card with no supply left. If these conditions were 
+met, I also wanted to check if the card was gained properly (put into the discard). 
+
+Since there might already be multiple Feasts in the randomly generated hand, deck, 
+and discard, I decided to count how many Feasts were in each pile before and after 
+the card was played. Ideally, the number of Feasts in the deck and discard would 
+remain the same and the number of feasts in hand would decrease by one. 
+
+I first checked if either the cost of the card randomly chosen was too high or if 
+the the chosen card had no supply left. If this was the case, I asserted that the 
+call shouldn't return 0, since such a card could not be gained according to the game 
+rules. 
+
+If it did pass those criteria, I did a few more checks. I checked that the played 
+Feast was no longer in the deck, hand, or discard. I then checked if the chosen card 
+was added to the discard pile (one more of that type in the discard than before 
+Feast was played). Finally, since the Feast card was played, I checked to make sure 
+that the hand size decreased by 1.
+
+Running these tests 1,000,000 times, I patiently waited for them to complete. After 
+no response and no failed asserts being printed, I terminated the process. It looked 
+like the program was hanging. In order to make sure, I reduced the number of tests 
+to one and ran the suite again. Again, the program stalled. 
+
+After briefly glancing at the source code, I saw the problem. The call to Feast 
+would trap the process in an infinite loop if a card was not successfully gained 
+instead of the expected behavior (returning -1).
+
+With this knowledge, I decided to alter my suite to ensure that the card chosen was 
+duchy (meeting the cost requirement) and that it was in stock. Running this modified 
+suite, the following assertions failed:
+
+1. Checking if the played Feast was no longer in the discard pile. 
+2. Checking if the selected card was added to the discard pile.
+3. Checking if the hand size decreased by 1.
+
+This tells us that there were other bugs besides the infinite loop. My hypothesis is 
+that these are likely caused by the same bug that caused the discard and hand counts 
+to be incorrect in the Adventurer test suite. Beyond that, I couldn't really narrow 
+down the cause of these assertions failing.
+
+Unfortunately, I couldn't run the full test suite without running into the infinite 
+loop so I couldn't gather code coverage data for this card.
+
+--------------------------------------------------------------------------------------
+
+For the last card, I did Gardens. Initially, I wanted to both test that the card 
+could never be played from hand, and that it would provide the correct number of 
+victory points when the scoreFor function was called on a player possesing one. 
+Ultimately, I decided to cut the score test for two reasons. Firstly, it preassumed 
+that both the scoreFor and the fullDeckCount (called by scoreFor) functions worked 
+properly, which was likely over-optimistic. Secondly, attempting to do so caused a 
+segfault when fullDeckCount was called. 
+
+This left me with an almost trivial test suite, but given the simplicity of Gardens 
+as a card, this wasn't too surprising. I fiddle around with the dominion.c code a 	
+bit in order to allow Gardens to return 0 under some very specific conditions 	
+(deckCount must equal 123 and handCount must equal 234), but the suite caught it 
+easily.
+
+Over the 100,000 tests, the assertion that Gardens should always return -1 when 
+attempting to be played never failed. Code coverage for dominion.c with this series 
+of tests was 21.71% and 100% for the Gardens function itself. 
+
+--------------------------------------------------------------------------------------
+
+Although not much coverage data was gathered in this assignment, the random tests 
+did succeed in having greater coverage than their unit test counterparts. This is not 
+surprising since random tests allow for millions of tests per run with varying 
+parameters. On the other hand, I would argue that they had less fault detection 
+capability, at least in this specific context, since I had  much greater difficulty 
+narrowing down the source of the problem since there were so many test runs and so 
+much output data to sift through. 
