@@ -1,0 +1,35 @@
+Although I believe my tester is coded correctly, every time I ran it on my 
+version of dominion.c, the tester hanged and never found a winner. Although I 
+tried debugging my version of dominion.c trying to find the cause the issue, I 
+wasn't able to resolve it. After running the suite on a classmate's (username 
+eastwooc) implementation of dominion (which I believe was bug-free, or at 
+least very close to it), the test suite ran successfully and resolved to find 
+a winner, and found no bugs in the game initialization code. Code coverage for 
+his dominion implementation was 92.91% after a single run of my test suite, 
+although my suite plays 100 games of dominion. Unfortunately my implementation 
+of dominion along with most of my classmates cause the suite to hang, likely 
+due to unfixed bugs left in our implementations, making the diff output 
+produced not useful (since I'm only printing the cards played and bought and 
+the final winner and these simply repeat over and over when the suite hangs) 
+and making calculating code coverage impossible for these buggy 
+implementations since I can't complete an execution of the test suite. For 
+this same reason, I included a timeout in my diffdominion bash script. In this 
+extreme case, it is easy to tell that eastwooc's implementation is correct, or 
+at least more correct according to my test suite, but this is still far from 
+an ideal case for differential testing. This is because of the binary criteria 
+used to determine the differential, which allows for perhaps a single bug to 
+completely change the output of the test suite, or prevent the test suite from 
+running at all. If the suite didn't hang for the buggier implementations of 
+dominion like mine and holidac's (which I also used when testing my 
+diffdominion program), the output given by diff and the TEST FAILED message 
+would tell us very very little about what is actually causing the bug(s). 
+Additonally, even if this information was useful, the sheer amount of output, 
+even after only 100 games played, is probably too much to sift through if 
+you're trying to do some real debugging.
+
+To run diffdominion in my environment, simply enter:
+
+diffdominion berezam_assignment4/ eastwooc_assignment4/ 42
+
+Where the two paths can be replaced with any of the three subdirectories I 
+have within my dominion folder, and 42 can be replaced with any seed value.

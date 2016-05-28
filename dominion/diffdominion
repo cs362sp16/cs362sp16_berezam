@@ -1,0 +1,86 @@
+#!/bin/bash
+
+#***************************************************************************
+# Initialize - Performs checks on the script input and sets up constants.
+#***************************************************************************
+function Initialize
+{
+	export Program=$(basename $0);
+	export Dir=$(dirname `readlink -f $0`);
+	
+	export OutputFileName="testdominion.out";
+	export DiffFileName="$Program.out";
+	export TimeoutTime=5;
+
+	if [ $# -lt 3 ]; then
+		echo "Usage: $Program <first dominion path> <second dominion path> <seed>";
+		exit 1;
+	fi
+	
+	export FirstPath=$1;
+	export SecondPath=$2;
+	export Seed=$3;
+}
+
+#***************************************************************************
+# CompileAndTest - Takes in two parameters (dominion path and seed), 
+# compiles the dominion program in the given path, runs testdominion with 
+# the given seed, and outputs the results to a testdominion.out file in the
+# dominion path.
+#***************************************************************************
+function CompileAndTest
+{
+	if [ $# -lt 2 ]; then
+		echo "Usage: CompileAndTest <dominion path> <seed>";
+		exit 1;
+	fi	
+
+	typeset DominionPath=$1;
+	typeset Seed=$2;
+	
+	cd $DominionPath;
+	
+	make clean &> /dev/null;
+	if [ $? -ne 0 ]; then
+		echo "Error: failed to run 'make clean' for the path '$DominionPath'" >&2;
+		exit 1;
+	fi
+	
+	make all &> /dev/null;
+	if [ $? -ne 0 ]; then
+		echo "Error: failed to run 'make all' for the path '$DominionPath'" >&2;
+		exit 1;
+	fi
+	
+	timeout $TimeoutTime testdominion $Seed > $OutputFileName;
+	if [ $? -eq 124 ]; then
+		echo "Warning: testdominion timed out for the path '$DominionPath'" >&2;
+		printf "\nTEST TIMED OUT.\n" >> $OutputFileName;
+	fi
+	
+	cd $Dir;
+}
+
+#***************************************************************************
+# Main - Compiles the dominion at the given paths, runs testdominion on
+# both with the given seed, and compares the output to determine if they
+# behave identically.
+#***************************************************************************
+function Main
+{
+	Initialize "$@"
+	
+	CompileAndTest $FirstPath $Seed;
+	
+	CompileAndTest $SecondPath $Seed;
+	
+	diff "$FirstPath/$OutputFileName" "$SecondPath/$OutputFileName" > $DiffFileName;
+	if [ $? -eq 0 ]; then
+		echo "TEST PASSED";
+	else
+		echo "TEST FAILED";
+		echo "Diff output stored to $DiffFileName";
+	fi
+}
+
+Main "$@";
