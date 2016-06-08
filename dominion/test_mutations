@@ -1,0 +1,36 @@
+#!/bin/bash
+
+declare -i count
+for i in ./mutants/*
+do
+	((var++))
+	echo $var
+	cp $i ./mutation_testing/dominion.c
+	cd mutation_testing/
+	make clean &> /dev/null
+	make all &> /dev/null
+	if [ $? -ne 0 ]
+	then
+		cd ../
+		echo $i >> mutants_failed_to_compile.txt
+		continue
+	else
+		cd ../
+		timeout 4 ./mutation_testing/testdominion 42 > mutant_output.txt
+		diff base_output.txt mutant_output.txt > diff.txt
+		if [ $? -eq 0 ]
+		then
+			echo $i >> mutants_killed.txt
+		else
+			echo $i >> mutants_survived.txt
+		fi
+	fi
+done
+
+numFailed=$(mutants_failed_to_compile.txt | wc -l)
+numKilled=$(mutants_killed.txt | wc -l)
+numSurvived=$(mutants_survived.txt | wc -l)
+
+echo "$numFailed/3014 mutants failed to compile."
+echo "$numKilled/3014 mutants were killed."
+echo "$numSurvived/3014 mutants survived."

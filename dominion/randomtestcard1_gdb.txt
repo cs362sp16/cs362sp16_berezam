@@ -1,0 +1,39 @@
+Starting program: /nfs/stak/students/b/berezam/CS362/cs362sp16_berezam/dominion/dominion_test/randomtestcard1 42
+
+Program received signal SIGINT, Interrupt.
+0x0000000000402c2a in supplyCount (card=15, state=0x7fffffff78c0)
+    at dominion.c:320
+320	int supplyCount(int card, struct gameState *state) {
+Missing separate debuginfos, use: debuginfo-install glibc-2.17-106.el7_2.6.x86_64
+321	  return state->supplyCount[card];
+322	}
+cardEffect (card=9, choice1=15, choice2=0, choice3=0, state=0x7fffffff78c0, 
+    handPos=0, bonus=0x7fffffff7898) at dominion.c:726
+726	      while( x == 1) {//Buy one card
+727		if (supplyCount(choice1, state) <= 0){
+supplyCount (card=15, state=0x7fffffff78c0) at dominion.c:321
+321	  return state->supplyCount[card];
+322	}
+cardEffect (card=9, choice1=15, choice2=0, choice3=0, state=0x7fffffff78c0, 
+    handPos=0, bonus=0x7fffffff7898) at dominion.c:726
+726	      while( x == 1) {//Buy one card
+727		if (supplyCount(choice1, state) <= 0){
+supplyCount (card=15, state=0x7fffffff78c0) at dominion.c:321
+321	  return state->supplyCount[card];
+322	}
+cardEffect (card=9, choice1=15, choice2=0, choice3=0, state=0x7fffffff78c0, 
+    handPos=0, bonus=0x7fffffff7898) at dominion.c:726
+726	      while( x == 1) {//Buy one card
+727		if (supplyCount(choice1, state) <= 0){
+supplyCount (card=15, state=0x7fffffff78c0) at dominion.c:321
+321	  return state->supplyCount[card];
+322	}
+cardEffect (card=9, choice1=15, choice2=0, choice3=0, state=0x7fffffff78c0, 
+    handPos=0, bonus=0x7fffffff7898) at dominion.c:726
+726	      while( x == 1) {//Buy one card
+727		if (supplyCount(choice1, state) <= 0){
+A debugging session is active.
+
+	Inferior 1 [process 14659] will be killed.
+
+Quit anyway? (y or n) 

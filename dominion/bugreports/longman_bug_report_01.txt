@@ -1,0 +1,27 @@
+Bug ID:          01
+
+Bug Description: Call to cardEffect on the card Feast fails to trash the card after its effect and the card remains
+                 in hand. There doesn't seem to be any specific conditions that cause this bug besides the call to 
+                 Feast itself. After inspecting the source code for Feast, I noticed that there was no call to 
+                 discardCard anywhere in the code, unlike the other card functions, which is likely the cause of 
+                 the bug.
+
+How to Produce:  The following section code cosistently produces the failing test case:
+
+                 //Feast is trashed after use, so it shouldn't be in hand
+                 for (i = 0; i < state.handCount[player]; i++) {
+                    if (state.hand[player][i] == feast) {
+                       inHand = 0;
+                    }
+                 }
+	
+                 failed = myassert(inHand, "Checking if Feast isn't in hand", failed);
+
+Severity:        Moderate. This bug only occurs when the Feast card is played and the fallout is simply that the 
+                 card doesn't get trashed and remains in hand. This harms playability, but shouldn't crash the 
+                 game. 
+
+Priority:        Moderate. This bug means that the implementation of Feast in the source code blantantly does not 
+                 beahve as described by the card text. Proper card functionality and adherance to the rules of the 
+                 game are important.
+

@@ -7,7 +7,7 @@
 #include <math.h>
 #include <string.h>
 
-#define NUM_TESTS 1000000	//Determines the number of tests ran
+#define NUM_TESTS 100	//Determines the number of tests ran
 
 #define PRINT 1
 
@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 	
+	int numFailed = 0;
 	int seedVal = atoi(argv[1]);	//seed value
 	int i;							//for loop counter
 	int cur_test;					//stores the current test 
@@ -35,7 +36,10 @@ int main(int argc, char* argv[]) {
 	int deckCount;					
 	int discardCount;				
 	int handCount;					
-	int numActions;					
+	int numActions;		
+	int preAdventurerHandCount;
+	int postAdventurerHandCount;
+	int adventurerHandCheck;
 	int preDeckDiscardTreasure;		//Number of treasures amongst the deck, discard, and played piles before Adventurer is played
 	int preHandTreasure;			//Number of treasures in hand before Adventurer is played
 	int postDeckDiscardTreasure;	
@@ -65,6 +69,9 @@ int main(int argc, char* argv[]) {
 		//Initialize flags to 0
 		preDeckDiscardTreasure = 0;
 		preHandTreasure = 0;
+		preAdventurerHandCount = 1;	//Starts with 1
+		postAdventurerHandCount = 0;
+		adventurerHandCheck = 0;
 		postDeckDiscardTreasure = 0;
 		postHandTreasure = 0;
 		numDrawn = 0;
@@ -105,6 +112,9 @@ int main(int argc, char* argv[]) {
 			
 			if((G.hand[p][i] == copper) | (G.hand[p][i] == silver) | (G.hand[p][i] == gold))
 				preHandTreasure++;
+			
+			else if (G.hand[p][i] == adventurer)
+				preAdventurerHandCount++;
 		}
 		
 		//Make the first card in the player's hand Adventurer
@@ -135,6 +145,9 @@ int main(int argc, char* argv[]) {
 		for(i = 0; i < G.handCount[p]; i++) {
 			if((G.hand[p][i] == copper) | (G.hand[p][i] == silver) | (G.hand[p][i] == gold))
 				postHandTreasure++;
+			
+			else if (G.hand[p][i] == adventurer)
+				postAdventurerHandCount++;
 		}
 		
 		for(i = 0; i < G.playedCardCount; i++) {
@@ -155,36 +168,47 @@ int main(int argc, char* argv[]) {
 		if(postHandTreasure == (preHandTreasure + numDrawn))
 			handTreasureCheck = 1;
 		
+		if(postAdventurerHandCount == (preAdventurerHandCount - 1))
+			adventurerHandCheck = 1;
+		
+		else 
+			numFailed++;
+		
 		//Calls assertions based on flags and prints descriptive messages
-		failed = myassert(handCountCheck, "Checking if hand size increased by correct amount", failed);
+		//failed = myassert(handCountCheck, "Checking if hand size increased by correct amount", failed);
 		
-		failed = myassert(deckDiscardCountCheck, "Checking if deck/discard/played size decreased by correct amount", failed);
+		//failed = myassert(deckDiscardCountCheck, "Checking if deck/discard/played size decreased by correct amount", failed);
 		
-		failed = myassert(deckDiscardTreasureCheck, "Checking if number of treasure cards in deck/discard/played decreased by correct amount", failed);
+		//failed = myassert(deckDiscardTreasureCheck, "Checking if number of treasure cards in deck/discard/played decreased by correct amount", failed);
 		
-		failed = myassert(handTreasureCheck, "Checking if number of treasures in hand increased by correct amount", failed);
+		//failed = myassert(handTreasureCheck, "Checking if number of treasures in hand increased by correct amount", failed);
+		
+		failed = myassert(adventurerHandCheck, "Checking if an Adventurer was removed from the hand", failed);
 		
 		//Prints data for each test if the static PRINT value is set to 1
-		if(PRINT) {
+		if(PRINT && (adventurerHandCheck == 0)) {
 			printf("Num treasure cards drawn: %d\n", numDrawn);
 			printf("Hand Size Before: %d\n", handCount);
 			printf("Hand Size After: %d\n", G.handCount[p]);
-			printf("Deck Size Before: %d\n", deckCount);
-			printf("Deck Size After: %d\n", G.deckCount[p]);
-			printf("Discard Size Before: %d\n", discardCount);
-			printf("Discard Size After: %d\n", G.discardCount[p]);
-			printf("Played Size Before: 0\n");
-			printf("Played Size After: %d\n", postPlayedCardCount);
-			printf("Deck + Discard + Played Before: %d\n", deckCount + discardCount);
-			printf("Deck + Discard + Played After: %d\n", G.deckCount[p] + G.discardCount[p] + G.playedCardCount);
-			printf("Number of Treasure Cards in Deck + Discard + Played before: %d\n", preDeckDiscardTreasure);
-			printf("Number of Treasure Cards in Deck + Discard + Played after: %d\n", postDeckDiscardTreasure);
-			printf("Number of Treasure Cards in Hand before: %d\n", preHandTreasure);
-			printf("Number of Treasure Cards in Hand after: %d\n", postHandTreasure);
+			//printf("Deck Size Before: %d\n", deckCount);
+			//printf("Deck Size After: %d\n", G.deckCount[p]);
+			//printf("Discard Size Before: %d\n", discardCount);
+			//printf("Discard Size After: %d\n", G.discardCount[p]);
+			//printf("Played Size Before: 0\n");
+			//printf("Played Size After: %d\n", postPlayedCardCount);
+			//printf("Deck + Discard + Played Before: %d\n", deckCount + discardCount);
+			//printf("Deck + Discard + Played After: %d\n", G.deckCount[p] + G.discardCount[p] + G.playedCardCount);
+			//printf("Number of Treasure Cards in Deck + Discard + Played before: %d\n", preDeckDiscardTreasure);
+			//printf("Number of Treasure Cards in Deck + Discard + Played after: %d\n", postDeckDiscardTreasure);
+			//printf("Number of Treasure Cards in Hand before: %d\n", preHandTreasure);
+			//printf("Number of Treasure Cards in Hand after: %d\n", postHandTreasure);
+			printf("Number of Adventurer Cards in Hand before: %d\n", preAdventurerHandCount);
+			printf("Number of Adventurer Cards in Hand after: %d\n", postAdventurerHandCount);
 		} 
 	} 
 	
 	checkasserts(failed);
+	printf("Number of Adventurer remaining in hand fails: %d/%d.\n", numFailed, NUM_TESTS);
 	
 	return 0;
 }

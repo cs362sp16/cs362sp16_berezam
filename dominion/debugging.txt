@@ -1,0 +1,51 @@
+I first noticed a severe bug when I wrote and ran cardtest1 and randomtestcard1, which both test Feast card
+functionality. 
+
+Cardtest1 was simply a unit test that initliazed a game, inserted Feast into the current players 
+hand, played it, and did some basic checks like seeing if trying to buy a Province (cost 8) would return -1 and 
+whether the card is properly trashed (instead of remaining in hand or being moved to deck or discard).
+
+Randomcardtest1, on the other hand was a full test suite that ran 1000000 tests. Each test would randomly generate
+number of players, current player, their number of actions, and the size and contents of their hand, deck, and 
+discard, then made the first card in their hand Feast. Each test would be then run some basic tests like checking
+if a card costing more than 5 can't be bought, one costing 5 or less can, whether the card is properly trashed, and
+if the gained card has been added to the discard. 
+
+When the tests were ran, however, the program simply hanged and didn't print any of the assertions I had put in. 
+Adding a printf statement to the inside of the Feast call would cause it to either be printed once or be printed 
+repeatedly forever, depending on where in the Feast code it was placed. It was clear now that I was dealing with an
+infinite loop. 
+
+I fed the program (randomtestcard1) to gdb, storing the output to a log file called randomtestcard1_gdb.txt. 
+Since it was an infinite loop, I didn't set any breakpoints and instead let the program reach the infinite loop by 
+waiting a few seconds and hitting Ctrl+C. I then stepped through the program many times and found that the program
+was running the lines to return supplyCount, entering the while(x == 1) loop, and the check for 
+if(supplyCount(choice1, state) <= 0) over and over again. From this, I deduced that the looping was likely related
+to the while loop and the supply count check. 
+
+I then found the previously mentioned lines in dominion.c and inspected them. A huge problem immediately jumped out
+at me. The while loop used "buy one card" would only end when x was set to something besides 1, which only happened
+if the player successfully bought a card; that is, when the supply count of the card selected wasn't 0 and when the
+card selected cost 5 or less. If these conditions weren't met, the program simply printed an error like "None of 
+that card left, sorry!", didn't return 0, and x remained 1, thus the loop wasn't exited. Since the user isn't given
+a chance to reassign what card they wish to gain, the same check would fail over and over and over again, never 
+leaving the while loop. 
+
+My first attempt at fixing the bug was to simply remove the while loop altogether and instead have the Feast code 
+return -1 when a player attempted to gain a card which had no supply left or cost more than 5. 
+
+After making the changes to dominion.c, I ran my test suite again and it didn't hang and I got the message "TEST
+SUCCESSFULLY COMPLETED". I ran the unit test cardtest1, and that didn't hang, either. 
+
+I ran the test suite several more times to make sure the change in outcome was a fluke, and it seemed to run, 
+complete, and pass consistently. At this point, I am confident I have fixed that particular bug.
+
+I applied several of Agans' Debugging Rules during this process. 
+
+I applied rule #1, by reading up the rules to see exactly how Feast should work, thus letting me know what to check
+in my suite and it let me know that a card chosen that has no supply or costs more than 5 should result in a bad 
+return, not continue looping.
+
+I applied rule #2 by using a test suite that always produced the infinite loop bug. 
+
+I applied rule #4 by using gdb to narrow down exactly what lines of code the program was looping over.

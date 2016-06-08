@@ -1,0 +1,51 @@
+Bug ID:          03
+
+Bug Description: When Adventurer is played, the number of Adventurer cards in hand stays the same, likely meaning
+                 that the card isn't being discarded or put into the played pile after being played. After 
+                 inspecting the dominion.c code for Adventurer, I noticed that although the non-treasure cards were
+                 being discarded, there was no call to discardCard for Adventurer itself, which is likely the cause
+                 of the bug.
+
+How to Produce:  The following code is relevant to producing the failing test case:
+
+                 int preAdventurerHandCount = 1;	//Starts with 1
+                 int postAdventurerHandCount = 0;
+                 int adventurerHandCheck = 0;
+                 
+                 //randomly generate hand contents besides the first card, which will be Adventurer
+                 for(i = 1; i < handCount; i++) {
+                    G.hand[p][i] = floor(Random() * (treasure_map + 1));
+			
+                    //counts Adventurer cards in hand
+                    else if (G.hand[p][i] == adventurer)
+                       preAdventurerHandCount++;
+                 }
+		
+                 //Make the first card in the player's hand Adventurer
+                 G.hand[p][0] = adventurer;
+
+                 //Plays adventurer, this assertion doesn't fail in any of my test cases
+                 failed = myassert(playCard(0, 0, 0, 0, &G) == 0, "Checking if Adventurer can be played", failed);
+
+                 //counts Adventurer cards in hand after its played
+                 for(i = 0; i < G.handCount[p]; i++) {
+                    else if (G.hand[p][i] == adventurer)
+                       postAdventurerHandCount++;
+                 }
+
+                 //Only set check to pass if number of Adventurer cards in hand decreases by one after playing it
+                 if(postAdventurerHandCount == (preAdventurerHandCount - 1))
+                    adventurerHandCheck = 1;
+
+                 //Assertion enforces adventurerHandCheck
+                 failed = myassert(adventurerHandCheck, "Checking if an Adventurer was removed from the hand", failed);
+
+                 //Prints the actual number in hand before and after, these are always equal in my test runs
+                 printf("Number of Adventurer Cards in Hand before: %d\n", preAdventurerHandCount);
+                 printf("Number of Adventurer Cards in Hand after: %d\n", postAdventurerHandCount);
+
+Severity:        Moderate. Essentially the same issue as bug 01, severity is therefore the same for the same
+                 reasons.
+
+Priority:        Morderate. Same as above.
+

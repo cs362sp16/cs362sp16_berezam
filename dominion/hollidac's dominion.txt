@@ -1,0 +1,44 @@
+hollidac's Dominion.c
+
+unittest1:
+	TEST SUCCESSFULLY COMPLETED.
+
+unittest2:
+	TEST SUCCESSFULLY COMPLETED.
+
+unittest3:
+	TEST SUCCESSFULLY COMPLETED.
+
+unittest4:
+	TEST SUCCESSFULLY COMPLETED.
+
+cardtest1:
+	FAILED ASSERTION: Checking if Feast isn't in hand.
+
+cardtest2:
+	TEST SUCCESSFULLY COMPLETED.
+	
+cardtest3:
+	FAILED ASSERTION: Checking if Smithy is in discard.
+
+cardtest4:
+	FAILED ASSERTION: Checking if Village is in discard.
+	
+randomtestcard1:
+	FAILED ASSERTION: Checking if Feast can't be played.
+
+randomtestcard2:
+	TEST SUCCESSFULLY COMPLETED.
+
+randomtestadventurer:
+	FAILED ASSERTION: Checking if number of treasure cards in deck/discard/played decreased by correct amount.
+	FAILED ASSERTION: Checking if an Adevnturer was removed from the hand.
+	FAILED ASSERTION: Checking if hand size increased by correct amount.
+	FAILED ASSERTION: Checking if deck/discard/played size decreased by correct amount.
+	FAILED ASSERTION: Checking if number of treasures in hand increased by correct amount. (Occasionally)
+	Number of Adventurer remaining in hand fails: 92/100.
+
+testdominion:
+	Loops forever.
+
+Code Coverage: 37.59%

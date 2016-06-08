@@ -1,0 +1,46 @@
+eastwooc's Dominion.c
+
+unittest1:
+	TEST SUCCESSFULLY COMPLETED.
+
+unittest2:
+	FAILED ASSERTION: Checking to see if numActions has increased by 1.
+
+unittest3:
+	TEST SUCCESSFULLY COMPLETED.
+
+unittest4:
+	TEST SUCCESSFULLY COMPLETED.
+
+cardtest1:
+	TEst SUCCESSFULLY COMPLETED.
+
+cardtest2:
+	TEST SUCCESSFULLY COMPLETED.
+	
+cardtest3:
+	TEST SUCCESSFULLY COMPLETED.
+
+cardtest4:
+	FAILED ASSERTION: Checking if Village is played successfully.
+	FAILED ASSERTION: Checking if Village isn't in hand.
+	FAILED ASSERTION: Checking if Village is in discard.
+	FAILED ASSERTION: Checking if actions have increased by 1.
+	
+randomtestcard1:
+	TEST SUCCESSFULLY COMPLETED.
+
+randomtestcard2:
+	TEST SUCCESSFULLY COMPLETED.
+
+randomtestadventurer:
+	FAILED ASSERTION: Checking if number of treasure cards in deck/discard/played decreased by correct amount.
+	FAILED ASSERTION: Checking if hand size increased by correct amount. (Occasionally)
+	FAILED ASSERTION: Checking if deck/discard/played size decreased by correct amount.
+	FAILED ASSERTION: Checking if number of treasures in hand increased by correct amount. (Occasionally)
+	Number of Adventurer remaining in hand fails: 16/100.
+
+testdominion:
+	TEST SUCCESSFULLY COMPLETED.
+
+Code Coverage: 93.99%

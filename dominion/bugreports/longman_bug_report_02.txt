@@ -1,0 +1,17 @@
+Bug ID:          02
+
+Bug Description: Trying to gain a card using Feast which costs more than 5 will cause the program enter an infinite
+                 loop, printing "That card is too expensive!" indefintely. 
+
+How to Produce:  The following section code produces the failing test case:
+                 
+                 //Tries to buy a Province with Feast, shouldn't work since Province costs 8
+	         failed = myassert(playCard(0, province, 0, 0, &state) != 0, "Checking if Province can't be 
+                 bought", failed);
+
+Severity:        High. The bug essentially breaks the game and doesn't relinquish control to the player until you
+                 force close the program or send an interrupt signal.
+
+Priority:        Moderate. The bug only manifests itself if the Feast card is used to gain a card that is too
+                 expensive, which shouldn't be happening normally if the player know and adhere to the rules.
+

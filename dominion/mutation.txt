@@ -1,0 +1,48 @@
+I chose to do mutation testing for my project since it sounded the most interesting from the way it was described 
+in class. I decided to follow the advice of Prof. Groce and use cmutate from the git repository linked in the
+assignments folder. 
+
+Since I use a PC and I don't really have any experience with or access to a Linux or OSX machine besides the flip
+server, I tried that first. Unfortunately, I ran into several obstacles since I don't have permissions to install
+Prolog, which is required for cmutate to work. I then decided to try Cygwin since I figured it'd be easier than 
+trying to install Linux on my machine and learn it on the fly with my limited timeframe to complete the task. I ran
+into a few roadblocks regarding not having the right tools (turns out Cygwin doesn't come with Prolog or Make), but
+I eventually got it working and successfully compiled the cmutate tool. 
+
+I ran it on my classmate's (eastwooc) version of dominion.c since his is relatively bug-free and I figured I'd get 
+the most interesting results from source code that didn't immediately enter an infinite loop or completely ignore 
+the act of moving cards from the discard to the played pile (bugs common to almost every dominion implemention I've
+come across). I ran it with a parameter of 100, rather arbitrarily, and after chugging for a while I was left with 
+3014 mutations, with mutations occuring for just about every one of the 1000+ lines of code. Truly an impressive
+tool. 
+
+I stored all the mutations in a folder and uploaded them to my dominion folder on the flip server so I could test
+and run my code there. I then went about writing a batch script that would compile and run my testdominion test 
+suite from assignment 4 against each of the mutation files, print the output to mutation_output.txt, diff it 
+against the output of the original (original_output.txt), and print the diff results to diff.txt.
+
+The script would then check the return flag of diff to see if the two output files had any differences. An
+identical output file was treated as a surviving mutant and had its name appended to mutants_survived.txt. Any
+differences would result in the mutants name being appended to mutants_killed.txt. Besides those two cases, the 
+script also accounted for mutants that failed to compile (a possibility mentioned to happen about 10% of the time
+in the README file of the tool) by appending these mutant file names to mutants_failed_to_compile.txt.
+
+AFter all 3014 mutants were tested, the script would finally read the number of lines in each of the three output 
+files and echo the numbers to the console.
+
+One thing to note is that because each suite plays 100 games of dominion and because some mutations hang until the
+timeout, the entire process is very very long, requiring over two hours for the script to complete on flip. I 
+originally supressed all output, but went back and changed the script to echo out a counter for each mutation ran,
+so I wouldn't waste hours on a run that was hanging or ran into some error. 
+
+For my first run, 89 mutants didn't compile, 842 were killed, and 2111 
+survived. Treating the total as the ones that compiled (842+2111=2953), my test suite managed to kill approximately
+28.5% of the mutants. This number is quite low and if we were to hold it to the same standards as code coverage, it
+would be considered abyssmal. However, this initial result is likely due to the limited amount of output my test 
+suite gave, rather than small scope of code it covered. My test suite only prints some initialization assertions
+regarding supply counts, followed by the cards bought and played by each player. Obviously, there is a lot more 
+going on in the background like deck state, hand state, and discard state.
+
+Based on this presumption, I went back to my test suite and added a few more assertions and made it print out the
+contents of the current player's hand and deck at the beginning of every turn. After making these changes, I ran
+my bash script again.

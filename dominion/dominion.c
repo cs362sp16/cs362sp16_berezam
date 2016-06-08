@@ -643,11 +643,16 @@ int getCost(int cardNumber)
   return -1;
 }
 
-void adventurer_call(struct gameState* state, int currentPlayer, int drawntreasure, int z, int temphand[MAX_HAND], int cardDrawn) {
+int adventurer_call(struct gameState* state, int currentPlayer, int drawntreasure, int z, int temphand[MAX_HAND], int cardDrawn, int handPos) {
+	int shuffled = 0;
 	while(drawntreasure < 2) {
 		
-		if (state->deckCount[currentPlayer] < 1) {	//if the deck is empty we need to shuffle discard and add to deck
-			shuffle(currentPlayer, state);
+		if (state->deckCount[currentPlayer] < 1) {
+			shuffled++;
+		}
+		
+		if (shuffled == 2) {
+			break;
 		}
 		
 		drawCard(currentPlayer, state);
@@ -657,19 +662,24 @@ void adventurer_call(struct gameState* state, int currentPlayer, int drawntreasu
 			drawntreasure++;
 		
 		else {
-			temphand[z]=cardDrawn;
-			state->handCount[currentPlayer]--;	//this should just remove the top card (the most recently drawn one).
-			z++;
+			discardCard((state->handCount[currentPlayer] - 1), currentPlayer, state, 0);
+			//temphand[z]=cardDrawn;
+			//state->handCount[currentPlayer]--;	//this should just remove the top card (the most recently drawn one).
+			//z++;
 		}
     }
       
-	while(z - 1 >= 0) {
-		state->discard[currentPlayer][state->discardCount[currentPlayer]++]=temphand[z - 1]; // discard all cards in play that have been drawn
-		z = z - 1;
-    }
+	//while(z - 1 >= 0) {
+		//state->discard[currentPlayer][state->discardCount[currentPlayer]++]=temphand[z - 1]; // discard all cards in play that have been drawn
+		//z = z - 1;
+    //}
+	
+	discardCard(handPos, currentPlayer, state, 0);
+	
+	return 0;
 }
 
-void council_room_call(struct gameState* state, int currentPlayer, int handPos, int i) {
+int council_room_call(struct gameState* state, int currentPlayer, int handPos, int i) {
 	//+4 Cards
 	for (i = 0; i <= 4; i++) {
 		drawCard(currentPlayer, state);
@@ -686,9 +696,10 @@ void council_room_call(struct gameState* state, int currentPlayer, int handPos, 
 			
     //put played card in played card pile
     discardCard(handPos, currentPlayer, state, 0);
+	return 0;
 }
 
-void feast_call(struct gameState* state, int currentPlayer, int i, int x, int choice1, int temphand[MAX_HAND]) {
+int feast_call(struct gameState* state, int currentPlayer, int i, int x, int choice1, int temphand[MAX_HAND]) {
 	//gain card with cost up to 5
     //Backup hand
     for (i = 0; i <= state->handCount[currentPlayer]; i++){
@@ -738,6 +749,8 @@ void feast_call(struct gameState* state, int currentPlayer, int i, int x, int ch
 		temphand[i] = -1;
     }
     //Reset Hand
+	
+	return 0;
 }
 
 int gardens_call() {
@@ -797,16 +810,15 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
   switch( card ) 
     {
     case adventurer:
-      adventurer_call(state, currentPlayer, drawntreasure, z, temphand, cardDrawn);
-      return 0;
+      return adventurer_call(state, currentPlayer, drawntreasure, z, temphand, cardDrawn, handPos);
 			
     case council_room:
-      council_room_call(state, currentPlayer, handPos, i);
-      return 0;
+      return council_room_call(state, currentPlayer, handPos, i);
+      
 			
     case feast:
-      feast_call(state, currentPlayer, i, x, choice1, temphand);
-      return 0;
+      return feast_call(state, currentPlayer, i, x, choice1, temphand);
+      
 			
     case gardens:
       return gardens_call();
